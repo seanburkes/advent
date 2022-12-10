@@ -7,70 +7,82 @@ import java.awt.Point
 import java.io.File
 import kotlin.collections.mutableListOf
 
-class Tree() {
+public fun String.getLinesFromFile(): List<String> {
+    return File(this).useLines { it.toList() }
+}
 
-    fun getLines(file: String): List<String> {
-        return File(file).useLines { it.toList() }
-    }
+public fun List<String>.parseLinesToGrid(): Array<Array<Int>> {
+    var grid: Array<Array<Int>> = arrayOf()
 
-    fun parseLinesToGrid(lines: List<String>): Array<Array<Int>> {
-        var grid: Array<Array<Int>> = arrayOf()
-
-        lines.forEach { line ->
-            run {
-                val row = stringToIntArray(line)
-                grid = grid + arrayOf(row)
-            }
+    this.forEach { line ->
+        run {
+            val row = stringToIntArray(line)
+            grid = grid + arrayOf(row)
         }
-
-        return grid
     }
 
-    fun stringToIntArray(line: String): Array<Int> {
-        return line.map { it.toString().toInt() }.toTypedArray()
-    }
+    return grid
+}
+
+public fun stringToIntArray(line: String): Array<Int> {
+    return line.map { it.toString().toInt() }.toTypedArray()
+}
+
+class Tree() {
 
     fun mapGridLeftRight(grid: Array<Array<Int>>): List<Point> {
         var points = mutableListOf<Point>()
         var tallest = -1
-        grid.forEachIndexed { x, row -> run {
-            row.forEachIndexed { y, value -> run {
-                if (value > tallest) {
-                    points.add(Point(x,y))
-                    tallest = value
+        grid.forEachIndexed { x, row ->
+            run {
+                row.forEachIndexed { y, value ->
+                    run {
+                        if (value > tallest) {
+                            points.add(Point(x, y))
+                            tallest = value
+                        }
+                    }
                 }
-            }}
-            tallest = -1
-            row.reversed().forEachIndexed { y, value -> run{
-                if (value > tallest) {
-                    points.add(Point(x, row.size-1-y))
-                    tallest = value
+                tallest = -1
+                row.reversed().forEachIndexed { y, value ->
+                    run {
+                        if (value > tallest) {
+                            points.add(Point(x, row.size - 1 - y))
+                            tallest = value
+                        }
+                    }
                 }
-            }}
-            tallest = -1
-        }}
+                tallest = -1
+            }
+        }
         return points
     }
 
     fun mapGridTopBottom(grid: Array<Array<Int>>): List<Point> {
         var points = mutableListOf<Point>()
         var tallest = -1
-        grid.mapIndexed { y, col -> run {
-            col.mapIndexed { x, value -> run {
-                if (value > tallest) {
-                    points.add(Point(x, y))
-                    tallest = value
+        grid.mapIndexed { y, col ->
+            run {
+                col.mapIndexed { x, value ->
+                    run {
+                        if (value > tallest) {
+                            points.add(Point(x, y))
+                            tallest = value
+                        }
+                    }
                 }
-            }}
-            tallest = -1
-            col.reversed().mapIndexed { x, value -> run{
-                if (value > tallest) {
-                    points.add(Point(x, col.size-1-y))
-                    tallest = value
+                tallest = -1
+                col.reversed().mapIndexed { x, value ->
+                    run {
+                        if (value > tallest) {
+                            points.add(Point(x, col.size - 1 - y))
+                            tallest = value
+                        }
+                    }
                 }
-            }}
-            tallest = -1
-        }}
+                tallest = -1
+            }
+        }
         return points
     }
 
@@ -145,9 +157,8 @@ class Tree() {
 
 fun main() {
     val file = "/home/sean/src/kotlin/advent/day8/input.txt"
-    val tree = Tree()
-    val lines = tree.getLines(file)
-    val grid = tree.parseLinesToGrid(lines)
+    val grid = file.getLinesFromFile().parseLinesToGrid()
+    var tree = Tree()
     println("Trees visible from outside: " + tree.getVisibility(grid))
     println("Top house score: " + tree.getScores(grid).sortedDescending().first())
 }
